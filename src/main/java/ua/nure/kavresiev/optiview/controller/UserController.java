@@ -1,49 +1,62 @@
 package ua.nure.kavresiev.optiview.controller;
 
 import ua.nure.kavresiev.optiview.entity.User;
-import ua.nure.kavresiev.optiview.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import ua.nure.kavresiev.optiview.service.SystemAdminService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final SystemAdminService systemAdminService;
 
-    // Отримати всіх юзерів
+    public UserController(SystemAdminService systemAdminService) {
+        this.systemAdminService = systemAdminService;
+    }
+
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(systemAdminService.getAllUsers());
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(systemAdminService.createUser(user));
     }
+
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-
-        user.setUsername(userDetails.getUsername());
-        user.setPasswordHash(userDetails.getPasswordHash());
-        user.setRole(userDetails.getRole());
-
-        return userRepository.save(user);
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        try {
+            return ResponseEntity.ok(systemAdminService.updateUser(id, user));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userRepository.deleteById(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        systemAdminService.deleteUser(id);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/check")
-    public Optional<User> getUserByUsername(@RequestParam String username) {
-        return userRepository.findByUsername(username);
+    @PostMapping("/{id}/toggle-status")
+    public ResponseEntity<User> toggleStatus(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(systemAdminService.toggleUserStatus(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/role")
+    public ResponseEntity<User> changeRole(@PathVariable Long id, @RequestParam String role) {
+        try {
+            return ResponseEntity.ok(systemAdminService.updateUserRole(id, role));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

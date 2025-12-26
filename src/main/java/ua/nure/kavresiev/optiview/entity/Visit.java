@@ -18,7 +18,7 @@ public class Visit {
     private Long patientId;
 
     @Column(name = "doctor_id")
-    private Long doctorId; // Це посилання на doctor_user_id
+    private Long doctorId;
 
     @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
@@ -31,4 +31,13 @@ public class Visit {
 
     @Column(name = "visit_type")
     private String visitType;
+
+    @Column(name = "diagnosis")
+    private String diagnosis;
+
+    @Column(name = "treatment")
+    private String treatment;
+
+    @Column(name = "visual_acuity")
+    private String visualAcuity;
 }
