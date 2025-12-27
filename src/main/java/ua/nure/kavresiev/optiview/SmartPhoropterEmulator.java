@@ -19,7 +19,7 @@ public class SmartPhoropterEmulator extends JFrame {
     private JTextArea logArea;
     private JButton measureButton;
     private JButton settingsButton;
-    private JTextField patientIdField; // Поле для введення ID пацієнта
+    private JTextField patientIdField;
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Random random = new Random();
